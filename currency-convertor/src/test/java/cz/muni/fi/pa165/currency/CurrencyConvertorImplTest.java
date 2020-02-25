@@ -1,7 +1,7 @@
 
 package cz.muni.fi.pa165.currency;
 
-import org.junit.BeforeClass;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -21,17 +21,20 @@ public class CurrencyConvertorImplTest {
     private CurrencyConvertor currencyConvertor;
     private Currency eur = Currency.getInstance(Locale.GERMANY);
     private Currency us = Currency.getInstance(Locale.US);
-    private BigDecimal amount = new BigDecimal("1");
 
-    @BeforeClass
-    public void setUp() throws ExternalServiceFailureException {
+    @Before
+    public void init() {
         currencyConvertor = new CurrencyConvertorImpl(exchangeRateTable);
-        when(exchangeRateTable.getExchangeRate(eur,us)).thenReturn(new BigDecimal(1.08));
     }
 
     @Test
-    public void testConvert() {
-        assertEquals(new BigDecimal(1.08), currencyConvertor.convert(eur, us, amount));
+    public void testConvert() throws ExternalServiceFailureException {
+        when(exchangeRateTable.getExchangeRate(eur,us)).thenReturn(new BigDecimal(1.08));
+
+        assertEquals(new BigDecimal("1.08"), currencyConvertor.convert(eur, us, BigDecimal.ONE));
+        assertEquals(new BigDecimal("1.09"), currencyConvertor.convert(eur, us, new BigDecimal("1.01")));
+        assertEquals(new BigDecimal("1.10"), currencyConvertor.convert(eur, us, new BigDecimal("1.02")));
+        assertEquals(new BigDecimal("1.11"), currencyConvertor.convert(eur, us, new BigDecimal("1.03")));
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -41,22 +44,26 @@ public class CurrencyConvertorImplTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testConvertWithNullTargetCurrency() {
-        currencyConvertor.convert(eur, null, amount);
+        currencyConvertor.convert(eur, null, BigDecimal.ONE);
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void testConvertWithNullSourceAmount() {
-        currencyConvertor.convert(null, us, amount);
+        currencyConvertor.convert(null, us, BigDecimal.ONE);
     }
 
     @Test(expected = UnknownExchangeRateException.class)
-    public void testConvertWithUnknownCurrency() {
-        currencyConvertor.convert(Currency.getInstance("UNKNOWN"), us, amount);
+    public void testConvertWithUnknownCurrency() throws ExternalServiceFailureException {
+        when(exchangeRateTable.getExchangeRate(eur, us))
+                .thenReturn(null);
+        currencyConvertor.convert(eur, us, BigDecimal.ONE);
     }
 
-    @Test
-    public void testConvertWithExternalServiceFailure() {
-        fail("Test is not implemented yet.");
+    @Test(expected = UnknownExchangeRateException.class)
+    public void testConvertWithExternalServiceFailure() throws ExternalServiceFailureException {
+        when(exchangeRateTable.getExchangeRate(eur, us))
+                .thenThrow(UnknownExchangeRateException.class);
+        currencyConvertor.convert(eur, us, BigDecimal.ONE);
     }
 
 }
