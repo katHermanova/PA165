@@ -9,14 +9,16 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import java.math.BigDecimal;
 import java.util.Currency;
 
+//main class Spring xml application context example
+
 public class MainXml {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
         ApplicationContext ctx = new ClassPathXmlApplicationContext("beans.xml");
 
-        ExchangeRateTable exchangeRateTable = ctx.getBean(ExchangeRateTableImpl.class);
-        CurrencyConvertor currencyConvertor = ctx.getBean(CurrencyConvertorImpl.class);
+        ExchangeRateTable exchangeRateTable = ctx.getBean(ExchangeRateTable.class);
+        //CurrencyConvertor currencyConvertor = ctx.getBean(CurrencyConvertorImpl.class);
 
-        currencyConvertor = new CurrencyConvertorImpl(exchangeRateTable);
+        CurrencyConvertor currencyConvertor = new CurrencyConvertorImpl(exchangeRateTable);
 
         Currency CZK = Currency.getInstance("CZK");
         Currency EUR = Currency.getInstance("EUR");

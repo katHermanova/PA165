@@ -33,7 +33,7 @@ public class CurrencyConvertorImplTest {
     public ExpectedException expectedException = ExpectedException.none();
 
     @Test
-    public void testConvert() throws ExternalServiceFailureException {
+    public void testConvert() throws ExternalServiceFailureException, InterruptedException {
         when(exchangeRateTable.getExchangeRate(EUR, CZK))
                 .thenReturn(new BigDecimal("0.1"));
 
@@ -44,25 +44,25 @@ public class CurrencyConvertorImplTest {
     }
 
     @Test
-    public void testConvertWithNullSourceCurrency() {
+    public void testConvertWithNullSourceCurrency() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         currencyConvertor.convert(null, CZK, BigDecimal.ONE);
     }
 
     @Test
-    public void testConvertWithNullTargetCurrency() {
+    public void testConvertWithNullTargetCurrency() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         currencyConvertor.convert(EUR, null, BigDecimal.ONE);
     }
 
     @Test
-    public void testConvertWithNullSourceAmount() {
+    public void testConvertWithNullSourceAmount() throws InterruptedException {
         expectedException.expect(IllegalArgumentException.class);
         currencyConvertor.convert(EUR, CZK, null);
     }
 
     @Test
-    public void testConvertWithUnknownCurrency() throws ExternalServiceFailureException {
+    public void testConvertWithUnknownCurrency() throws ExternalServiceFailureException, InterruptedException {
         when(exchangeRateTable.getExchangeRate(EUR, CZK))
                 .thenReturn(null);
         expectedException.expect(UnknownExchangeRateException.class);
@@ -71,7 +71,7 @@ public class CurrencyConvertorImplTest {
     }
 
     @Test
-    public void testConvertWithExternalServiceFailure() throws ExternalServiceFailureException {
+    public void testConvertWithExternalServiceFailure() throws ExternalServiceFailureException, InterruptedException {
         when(exchangeRateTable.getExchangeRate(EUR, CZK))
                 .thenThrow(UnknownExchangeRateException.class);
         expectedException.expect(UnknownExchangeRateException.class);

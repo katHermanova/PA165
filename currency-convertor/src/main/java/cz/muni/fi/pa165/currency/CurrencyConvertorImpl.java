@@ -1,7 +1,7 @@
 package cz.muni.fi.pa165.currency;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+//import cz.muni.fi.pa165.Timed;
+//import org.springframework.stereotype.Component;
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.math.BigDecimal;
@@ -14,11 +14,10 @@ import java.util.Currency;
  *
  * @author petr.adamek@embedit.cz
  */
-@Component("currencyConvertor")
+//@Component("currencyConvertor")
 @Named
 public class CurrencyConvertorImpl implements CurrencyConvertor {
 
-    @Autowired
     @Inject
     private final ExchangeRateTable exchangeRateTable;
     //private final Logger logger = LoggerFactory.getLogger(CurrencyConvertorImpl.class);
@@ -28,7 +27,7 @@ public class CurrencyConvertorImpl implements CurrencyConvertor {
     }
 
     @Override
-    public BigDecimal convert(Currency sourceCurrency, Currency targetCurrency, BigDecimal sourceAmount) {
+    public BigDecimal convert(Currency sourceCurrency, Currency targetCurrency, BigDecimal sourceAmount) throws InterruptedException {
         if (sourceCurrency == null) {
             throw new IllegalArgumentException("sourceCurrency is null");
         }
